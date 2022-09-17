@@ -28,8 +28,8 @@ class Phone(Base):
 class Address(Base):
     __tablename__ = 'addresses'
     address_id = Column(Integer, primary_key=True)
-    address_ad = Column(String(60), nullable=False)
-    names = relationship('Name', secondary='names_to_all', back_populates='addresses')
+    address_ad = Column(String(60), nullable=None)
+    names = relationship('Name', secondary='names_to_all', back_populates='address')
 
 class Email(Base):
     __tablename__ = 'emails'
