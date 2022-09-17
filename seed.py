@@ -49,7 +49,6 @@ def create_relationship():
 
     for name in names:
         address = random.choice(addresses)
-        # phones = random.randint(1, 30)
         email = random.choice(emails)
         rel = NameAll(name_id=name.name_id, phone_id=random.randint(1, 30), address_id=address.address_id,
                       email_id=email.email_id)

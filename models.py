@@ -14,28 +14,28 @@ class Name(Base):
     name_id = Column(Integer, primary_key=True)
     name_n = Column(String(60), nullable=False)
     phones = relationship('Phone', secondary='names_to_all', back_populates='names')
-    address = relationship('Address', secondary='names_to_all', back_populates='names')
-    emails = relationship('Email', secondary='names_to_all', back_populates='names')
+    address = relationship('Address', secondary='names_to_all', back_populates='names', overlaps="phones")
+    emails = relationship('Email', secondary='names_to_all', back_populates='names', overlaps="address,phones")
 
 
 class Phone(Base):
     __tablename__ = 'phones'
     phone_id = Column(Integer, primary_key=True)
     phone_num = Column(String(60), nullable=False)
-    names = relationship('Name', secondary='names_to_all', back_populates='phones')
+    names = relationship('Name', secondary='names_to_all', back_populates='phones', overlaps="address,emails")
 
 
 class Address(Base):
     __tablename__ = 'addresses'
     address_id = Column(Integer, primary_key=True)
     address_ad = Column(String(60), nullable=None)
-    names = relationship('Name', secondary='names_to_all', back_populates='address')
+    names = relationship('Name', secondary='names_to_all', back_populates='address', overlaps="emails,names,phones")
 
 class Email(Base):
     __tablename__ = 'emails'
     email_id = Column(Integer, primary_key=True)
     email_mail = Column(String(60), nullable=False)
-    names = relationship('Name', secondary='names_to_all', back_populates='emails')
+    names = relationship('Name', secondary='names_to_all', back_populates='emails', overlaps="address,names,names,phones")
 
 
 class NameAll(Base):
