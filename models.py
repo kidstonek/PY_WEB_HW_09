@@ -9,41 +9,40 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-class Name(Base):
-    __tablename__ = 'names'
-    name_id = Column(Integer, primary_key=True)
-    name_n = Column(String(60), nullable=False)
-    phones = relationship('Phone', secondary='names_to_all', back_populates='names')
-    address = relationship('Address', secondary='names_to_all', back_populates='names', overlaps="phones")
-    emails = relationship('Email', secondary='names_to_all', back_populates='names', overlaps="address,phones")
+class Contact(Base):
+    __tablename__ = 'contacts'
+    cont_id = Column(Integer, primary_key=True)
+    cont_name = Column(String(60), nullable=False)
+    cont_address = relationship("Address", back_populates="contact_ad")
+    phones = relationship('Phone', secondary='contacts_to_phone', back_populates='contact')
+    cont_email = relationship('Email', back_populates='contact_email')
 
 
 class Phone(Base):
     __tablename__ = 'phones'
     phone_id = Column(Integer, primary_key=True)
     phone_num = Column(String(60), nullable=False)
-    names = relationship('Name', secondary='names_to_all', back_populates='phones', overlaps="address,emails")
+    contact = relationship('Contact', secondary='contacts_to_phone', back_populates='phones')
 
 
 class Address(Base):
     __tablename__ = 'addresses'
     address_id = Column(Integer, primary_key=True)
     address_ad = Column(String(60), nullable=None)
-    names = relationship('Name', secondary='names_to_all', back_populates='address', overlaps="emails,names,phones")
+    contact_id = Column('contact_id', ForeignKey('contacts.cont_id', ondelete='CASCADE'), nullable=False)
+    contact_ad = relationship("Contact", back_populates="cont_address")
+
 
 class Email(Base):
     __tablename__ = 'emails'
     email_id = Column(Integer, primary_key=True)
     email_mail = Column(String(60), nullable=False)
-    names = relationship('Name', secondary='names_to_all', back_populates='emails', overlaps="address,names,names,phones")
+    contact_id = Column('contact_id', ForeignKey('contacts.cont_id', ondelete='CASCADE'), nullable=False)
+    contact_email = relationship("Contact", back_populates="cont_email")
 
 
-class NameAll(Base):
-    __tablename__ = 'names_to_all'
+class ContactToPhone(Base):
+    __tablename__ = 'contacts_to_phone'
     id = Column(Integer, primary_key=True)
-    name_id = Column('name_id', ForeignKey('names.name_id'))
-    phone_id = Column('phone_id', ForeignKey('phones.phone_id'))
-    address_id = Column('address_id', ForeignKey('addresses.address_id'))
-    email_id = Column('email_id', ForeignKey('emails.email_id'))
-
-
+    contact_id = Column('contact_id', ForeignKey('contacts.cont_id', ondelete='CASCADE'))
+    phone_id = Column('phone_id', ForeignKey('phones.phone_id', ondelete='CASCADE'))
